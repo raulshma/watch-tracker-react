@@ -8,19 +8,19 @@ import {
   Link,
   Badge,
 } from '@chakra-ui/layout';
-import { Avatar, Button, Image } from '@chakra-ui/react';
+import { Avatar, Button, IconButton, Image, useToast } from '@chakra-ui/react';
 import { useColorModeValue } from '@chakra-ui/system';
 import ReactStars from 'react-rating-stars-component';
 import React from 'react';
-import {
-  TiStarOutline,
-  TiStarHalfOutline,
-  TiStarFullOutline,
-} from 'react-icons/ti';
+import { IoMdRemove } from 'react-icons/io';
+import { MdEdit } from 'react-icons/md';
 import { TEXT_MT } from '../../constants';
 import ReleaseYear from './ReleaseYear';
+import AlertCommon from './AlertCommon';
+import EditMovie from '../modals/EditMovie';
 
 export default function MovieCard({
+  id,
   title,
   poster,
   rating,
@@ -28,9 +28,30 @@ export default function MovieCard({
   year,
   wikiLink,
   imdbLink,
+  description,
 }: any) {
   return (
-    <Center py={6}>
+    <Center py={6} position="relative">
+      <AlertCommon
+        header="Delete?"
+        body={`Are you sure you want to delete ${title}`}
+        CustomIcon={IoMdRemove}
+        id={id}
+        actionName="REMOVE"
+      />
+      <EditMovie
+        item={{
+          id,
+          title,
+          poster,
+          rating,
+          genre,
+          year,
+          wikiLink,
+          imdbLink,
+          description,
+        }}
+      />
       <Box
         minW="150px"
         maxW={'270px'}
@@ -40,7 +61,7 @@ export default function MovieCard({
         rounded={'md'}
         overflow={'hidden'}
       >
-        {poster && (
+        <Box position="relative" className="movie-image">
           <Image
             h={'210px'}
             w={'full'}
@@ -48,7 +69,10 @@ export default function MovieCard({
             fallbackSrc="https://via.placeholder.com/150x160"
             objectFit={'cover'}
           />
-        )}
+          <Box className="movie-description" w={'full'} p="1.5">
+            {description}
+          </Box>
+        </Box>
         <Box p={6}>
           <Stack spacing={0} align={'center'}>
             <Heading

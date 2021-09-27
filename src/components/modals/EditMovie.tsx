@@ -5,6 +5,7 @@ import {
   FormErrorMessage,
   FormLabel,
   HStack,
+  IconButton,
   Input,
   Modal,
   ModalBody,
@@ -19,11 +20,11 @@ import {
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { MdEdit } from 'react-icons/md';
 import { supabase } from '../../client/supabaseClient';
 import { REGEX_URL } from '../../constants';
-import MovieAutoSuggest from '../common/AutoSuggest';
 
-export default function AddMovie() {
+export default function EditMovie({ item: item }: any) {
   const toast = useToast();
   const [loading, setLoading] = useState<boolean>(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -31,7 +32,6 @@ export default function AddMovie() {
   const {
     register,
     handleSubmit,
-    reset,
     watch,
     formState: { errors },
   } = useForm();
@@ -42,17 +42,20 @@ export default function AddMovie() {
     setLoading((prev: boolean) => !prev);
     const rating = Number(values.rating);
     const model = {
-      title: values.title.trim(),
-      description: values.description.trim(),
-      image: values.image_url.trim(),
-      genre: values.genre.trim(),
-      year: values.year.trim(),
-      wiki_link: values.wiki_link.trim(),
-      imdb_link: values.imdb_link.trim(),
+      title: values.title,
+      description: values.description,
+      image: values.image_url,
+      genre: values.genre,
+      year: values.year,
+      wiki_link: values.wiki_link,
+      imdb_link: values.imdb_link,
       rating: rating === 0 ? null : rating,
       user_id: user.id,
     };
-    const { data, error } = await supabase.from('list').insert([model]);
+    const { data, error } = await supabase
+      .from('list')
+      .update([model])
+      .eq('id', item.id);
     if (data) {
       toast({
         title: 'Success.',
@@ -60,7 +63,6 @@ export default function AddMovie() {
         duration: 4500,
         isClosable: true,
       });
-      reset();
       onClose();
     } else if (error) {
       toast({
@@ -74,10 +76,21 @@ export default function AddMovie() {
   };
 
   return (
-    <Box m="2">
-      <Button onClick={onOpen} size="sm">
-        ADD
-      </Button>
+    <>
+      <IconButton
+        position="absolute"
+        zIndex="1"
+        bottom="0"
+        left="0"
+        size="xs"
+        marginLeft={2}
+        marginBottom={8}
+        aria-label="Remove"
+        fontSize="1rem"
+        borderRadius="2rem"
+        icon={<MdEdit />}
+        onClick={onOpen}
+      />
 
       <Modal
         isOpen={isOpen}
@@ -88,15 +101,15 @@ export default function AddMovie() {
         <ModalOverlay />
         <ModalContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <ModalHeader>Add movie</ModalHeader>
+            <ModalHeader>Update movie</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={6}>
-              <MovieAutoSuggest />
               <FormControl isInvalid={errors.title}>
                 <FormLabel>Title</FormLabel>
                 <Input
                   size="sm"
                   placeholder="Title"
+                  defaultValue={item.title}
                   {...register('title', { required: true })}
                 />
               </FormControl>
@@ -106,6 +119,7 @@ export default function AddMovie() {
                 <Textarea
                   size="sm"
                   rows={2}
+                  defaultValue={item.description}
                   placeholder="Description"
                   {...register('description', { required: true })}
                 />
@@ -114,6 +128,7 @@ export default function AddMovie() {
                 <FormLabel>Image Url</FormLabel>
                 <Input
                   size="sm"
+                  defaultValue={item.poster ?? ''}
                   placeholder="Image Url"
                   {...register('image_url', { pattern: REGEX_URL })}
                 />
@@ -121,21 +136,37 @@ export default function AddMovie() {
               <HStack>
                 <FormControl pt={2} isInvalid={errors.genre}>
                   <FormLabel>Genre</FormLabel>
-                  <Input size="sm" placeholder="Genre" {...register('genre')} />
+                  <Input
+                    size="sm"
+                    defaultValue={item.genre ?? ''}
+                    placeholder="Genre"
+                    {...register('genre')}
+                  />
                 </FormControl>
                 <FormControl pt={2} isInvalid={errors.year}>
                   <FormLabel>Release Year</FormLabel>
-                  <Input size="sm" placeholder="Year" {...register('year')} />
+                  <Input
+                    size="sm"
+                    defaultValue={item.year ?? ''}
+                    placeholder="Year"
+                    {...register('year')}
+                  />
                 </FormControl>
               </HStack>
               <FormControl pt={2} isInvalid={errors.rating}>
                 <FormLabel>Rating</FormLabel>
-                <Input size="sm" placeholder="Rating" {...register('rating')} />
+                <Input
+                  size="sm"
+                  defaultValue={item.rating ?? ''}
+                  placeholder="Rating"
+                  {...register('rating')}
+                />
               </FormControl>
               <FormControl mt={2} isInvalid={errors.wiki_link}>
                 <FormLabel>Wikipedia Link</FormLabel>
                 <Input
                   size="sm"
+                  defaultValue={item.wikiLink ?? ''}
                   placeholder="Wikipedia Link"
                   {...register('wiki_link', { pattern: REGEX_URL })}
                 />
@@ -144,6 +175,7 @@ export default function AddMovie() {
                 <FormLabel>IMDB Link</FormLabel>
                 <Input
                   size="sm"
+                  defaultValue={item.imdbLink ?? ''}
                   placeholder="IMDB Link"
                   {...register('imdb_link', { pattern: REGEX_URL })}
                 />
@@ -161,7 +193,7 @@ export default function AddMovie() {
                 colorScheme="blue"
                 mr={3}
               >
-                Save
+                Update
               </Button>
               <Button size="sm" onClick={onClose}>
                 Cancel
@@ -170,6 +202,6 @@ export default function AddMovie() {
           </form>
         </ModalContent>
       </Modal>
-    </Box>
+    </>
   );
 }

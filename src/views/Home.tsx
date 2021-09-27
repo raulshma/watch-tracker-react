@@ -1,9 +1,11 @@
-import { Box, Center, Flex, HStack, Spacer, VStack } from '@chakra-ui/layout';
-import { Grid, Spinner, useToast } from '@chakra-ui/react';
+import { IconButton } from '@chakra-ui/button';
+import { Input, InputGroup, InputRightElement } from '@chakra-ui/input';
+import { Box, Flex } from '@chakra-ui/layout';
+
 import { Session } from '@supabase/gotrue-js';
 import { PostgrestError } from '@supabase/postgrest-js';
-import React, { useEffect, useState } from 'react';
-import { useTransition, animated } from '@react-spring/web';
+import React, { useEffect } from 'react';
+import { MdClear } from 'react-icons/md';
 
 import { supabase } from '../client/supabaseClient';
 import MovieCard from '../components/common/MovieCard';
@@ -18,17 +20,31 @@ type Response = {
 
 export default function Home({ session }: { session: Session }) {
   const itemsArray = useGlobalState();
-  const transition = useTransition(itemsArray.get(), {
-    from: { x: -100, y: -200, opacity: 0 },
-    enter: (item) => async (next) => {
-      await next({ y: 0, opacity: 1, delay: item.delay });
-    },
-    leave: { x: -100, y: -200, opacity: 0 },
-  });
+  const [searchValue, setSearchValue] = React.useState<string>('');
+  const [filteredData, setFilteredData] = React.useState<any>([]);
 
   useEffect(() => {
     getList();
   }, []);
+
+  const handleSearch = (event) => {
+    let value = event.target.value.toLowerCase();
+    setSearchValue(value);
+    let result: any[] = [];
+    if (event.target.value == '') {
+      setFilteredData(itemsArray.get());
+      setSearchValue('');
+      return;
+    }
+    result = itemsArray.get().filter((data) => {
+      return (
+        data.title?.toLowerCase().includes(value) ||
+        data.year?.includes(value) ||
+        data.genre?.toLowerCase().includes(value)
+      );
+    });
+    setFilteredData(result);
+  };
 
   async function getList() {
     let init = await supabase
@@ -36,20 +52,46 @@ export default function Home({ session }: { session: Session }) {
       .select('*')
       .order('updated_at', { ascending: false });
     itemsArray.itemsAdd(init.data);
+    setFilteredData(init.data);
     await supabase
       .from('list')
       .on('*', (payload) => {
         console.log('Change received!', payload);
         if (payload.eventType === 'DELETE') {
           itemsArray.itemsRemove(payload.old.id);
-        } else itemsArray.itemsAdd(payload.new);
+          setFilteredData((prev) => {
+            return prev.filter((i) => i.id !== payload.old.id);
+          });
+        } else {
+          itemsArray.itemsAdd(payload.new);
+          setFilteredData((prev) => {
+            return [payload.new, ...prev];
+          });
+        }
       })
       .subscribe();
   }
   return (
     <Box>
-      <Box>
+      <Box flexDirection="row">
         <AddItem />
+        <InputGroup size="md" m="2">
+          <Input
+            type="text"
+            variant="flushed"
+            onChange={handleSearch}
+            value={searchValue}
+            placeholder="Search by title, genre & year."
+          />
+          <InputRightElement>
+            <IconButton
+              aria-label="Clear"
+              isRound
+              onClick={() => handleSearch({ target: { value: '' } })}
+              icon={<MdClear />}
+            />
+          </InputRightElement>
+        </InputGroup>
       </Box>
       <Flex
         gap={GRID_GAP}
@@ -59,7 +101,7 @@ export default function Home({ session }: { session: Session }) {
         ml={GRID_ML}
         mr={GRID_MR}
       >
-        {itemsArray.get().map((i, _) => (
+        {filteredData.map((i, _) => (
           <MovieCard
             id={i.id}
             title={i.title}

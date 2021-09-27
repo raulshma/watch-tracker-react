@@ -13,12 +13,10 @@ const wrapState = (s: State<any[]>) => ({
   },
   itemsAdd: (obj: any) => {
     globalState.set(value => {
-      let delay = 0;
       if (Array.isArray(obj))
-        value.unshift(...obj.map(e => { e.delay = delay + 150; delay += 150; return e;}))
+        value.unshift(...obj)
       else
         value.unshift(obj)
-      console.log(value)
       return value;
     })
   },

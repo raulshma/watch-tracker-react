@@ -98,109 +98,113 @@ export default function EditMovie({ item: item }: any) {
         closeOnOverlayClick={false}
         isCentered
       >
-        <ModalOverlay />
-        <ModalContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <ModalHeader>Update movie</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              <FormControl isInvalid={errors.title}>
-                <FormLabel>Title</FormLabel>
-                <Input
-                  size="sm"
-                  placeholder="Title"
-                  defaultValue={item.title}
-                  {...register('title', { required: true })}
-                />
-              </FormControl>
+        {isOpen && (
+          <>
+            <ModalOverlay />
+            <ModalContent>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <ModalHeader>Update movie</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody pb={6}>
+                  <FormControl isInvalid={errors.title}>
+                    <FormLabel>Title</FormLabel>
+                    <Input
+                      size="sm"
+                      placeholder="Title"
+                      defaultValue={item.title}
+                      {...register('title', { required: true })}
+                    />
+                  </FormControl>
 
-              <FormControl mt={2} isInvalid={errors.description}>
-                <FormLabel>Description</FormLabel>
-                <Textarea
-                  size="sm"
-                  rows={2}
-                  defaultValue={item.description}
-                  placeholder="Description"
-                  {...register('description', { required: true })}
-                />
-              </FormControl>
-              <FormControl mt={2} isInvalid={errors.image_url}>
-                <FormLabel>Image Url</FormLabel>
-                <Input
-                  size="sm"
-                  defaultValue={item.poster ?? ''}
-                  placeholder="Image Url"
-                  {...register('image_url', { pattern: REGEX_URL })}
-                />
-              </FormControl>
-              <HStack>
-                <FormControl pt={2} isInvalid={errors.genre}>
-                  <FormLabel>Genre</FormLabel>
-                  <Input
+                  <FormControl mt={2} isInvalid={errors.description}>
+                    <FormLabel>Description</FormLabel>
+                    <Textarea
+                      size="sm"
+                      rows={2}
+                      defaultValue={item.description}
+                      placeholder="Description"
+                      {...register('description', { required: true })}
+                    />
+                  </FormControl>
+                  <FormControl mt={2} isInvalid={errors.image_url}>
+                    <FormLabel>Image Url</FormLabel>
+                    <Input
+                      size="sm"
+                      defaultValue={item.poster ?? ''}
+                      placeholder="Image Url"
+                      {...register('image_url', { pattern: REGEX_URL })}
+                    />
+                  </FormControl>
+                  <HStack>
+                    <FormControl pt={2} isInvalid={errors.genre}>
+                      <FormLabel>Genre</FormLabel>
+                      <Input
+                        size="sm"
+                        defaultValue={item.genre ?? ''}
+                        placeholder="Genre"
+                        {...register('genre')}
+                      />
+                    </FormControl>
+                    <FormControl pt={2} isInvalid={errors.year}>
+                      <FormLabel>Release Year</FormLabel>
+                      <Input
+                        size="sm"
+                        defaultValue={item.year ?? ''}
+                        placeholder="Year"
+                        {...register('year')}
+                      />
+                    </FormControl>
+                  </HStack>
+                  <FormControl pt={2} isInvalid={errors.rating}>
+                    <FormLabel>Rating</FormLabel>
+                    <Input
+                      size="sm"
+                      defaultValue={item.rating ?? ''}
+                      placeholder="Rating"
+                      {...register('rating')}
+                    />
+                  </FormControl>
+                  <FormControl mt={2} isInvalid={errors.wiki_link}>
+                    <FormLabel>Wikipedia Link</FormLabel>
+                    <Input
+                      size="sm"
+                      defaultValue={item.wikiLink ?? ''}
+                      placeholder="Wikipedia Link"
+                      {...register('wiki_link', { pattern: REGEX_URL })}
+                    />
+                  </FormControl>
+                  <FormControl mt={2} isInvalid={errors.imdb_link}>
+                    <FormLabel>IMDB Link</FormLabel>
+                    <Input
+                      size="sm"
+                      defaultValue={item.imdbLink ?? ''}
+                      placeholder="IMDB Link"
+                      {...register('imdb_link', { pattern: REGEX_URL })}
+                    />
+                  </FormControl>
+                  <FormErrorMessage>
+                    {errors.wiki_link && errors.wiki_link.message}
+                    {errors.imdb_link && errors.imdb_link.message}
+                  </FormErrorMessage>
+                </ModalBody>
+                <ModalFooter>
+                  <Button
                     size="sm"
-                    defaultValue={item.genre ?? ''}
-                    placeholder="Genre"
-                    {...register('genre')}
-                  />
-                </FormControl>
-                <FormControl pt={2} isInvalid={errors.year}>
-                  <FormLabel>Release Year</FormLabel>
-                  <Input
-                    size="sm"
-                    defaultValue={item.year ?? ''}
-                    placeholder="Year"
-                    {...register('year')}
-                  />
-                </FormControl>
-              </HStack>
-              <FormControl pt={2} isInvalid={errors.rating}>
-                <FormLabel>Rating</FormLabel>
-                <Input
-                  size="sm"
-                  defaultValue={item.rating ?? ''}
-                  placeholder="Rating"
-                  {...register('rating')}
-                />
-              </FormControl>
-              <FormControl mt={2} isInvalid={errors.wiki_link}>
-                <FormLabel>Wikipedia Link</FormLabel>
-                <Input
-                  size="sm"
-                  defaultValue={item.wikiLink ?? ''}
-                  placeholder="Wikipedia Link"
-                  {...register('wiki_link', { pattern: REGEX_URL })}
-                />
-              </FormControl>
-              <FormControl mt={2} isInvalid={errors.imdb_link}>
-                <FormLabel>IMDB Link</FormLabel>
-                <Input
-                  size="sm"
-                  defaultValue={item.imdbLink ?? ''}
-                  placeholder="IMDB Link"
-                  {...register('imdb_link', { pattern: REGEX_URL })}
-                />
-              </FormControl>
-              <FormErrorMessage>
-                {errors.wiki_link && errors.wiki_link.message}
-                {errors.imdb_link && errors.imdb_link.message}
-              </FormErrorMessage>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                size="sm"
-                type="submit"
-                isLoading={loading}
-                colorScheme="blue"
-                mr={3}
-              >
-                Update
-              </Button>
-              <Button size="sm" onClick={onClose}>
-                Cancel
-              </Button>
-            </ModalFooter>
-          </form>
-        </ModalContent>
+                    type="submit"
+                    isLoading={loading}
+                    colorScheme="blue"
+                    mr={3}
+                  >
+                    Update
+                  </Button>
+                  <Button size="sm" onClick={onClose}>
+                    Cancel
+                  </Button>
+                </ModalFooter>
+              </form>
+            </ModalContent>
+          </>
+        )}
       </Modal>
     </>
   );

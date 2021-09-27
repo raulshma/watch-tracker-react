@@ -28,6 +28,13 @@ code {
   transform: translateY(-150px);
   transition: color 1s, transform 400ms ease-in, opacity 1s, visibility 800ms;
 }
+.movie-card {
+  height: 425px !important;
+  min-height: 425px !important;
+  max-height: 425px !important;
+  min-width: 265px !important;
+  max-width: 265px !important;
+}
 .movie-image:hover .movie-description {
   visibility: visible;
   color: #fefefe;

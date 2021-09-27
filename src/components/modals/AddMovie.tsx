@@ -91,7 +91,7 @@ export default function AddMovie() {
             <ModalHeader>Add movie</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={6}>
-              <MovieAutoSuggest />
+              {/* <MovieAutoSuggest /> */}
               <FormControl isInvalid={errors.title}>
                 <FormLabel>Title</FormLabel>
                 <Input

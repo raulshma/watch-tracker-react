@@ -1,4 +1,4 @@
-import { IconButton } from '@chakra-ui/button';
+import { Button, IconButton } from '@chakra-ui/button';
 import { Input, InputGroup, InputRightElement } from '@chakra-ui/input';
 import { Box, Flex } from '@chakra-ui/layout';
 
@@ -73,8 +73,10 @@ export default function Home({ session }: { session: Session }) {
   }
   return (
     <Box>
-      <Box flexDirection="row">
-        <AddItem />
+      <Box display="flex" flexDirection="row">
+        <Box display="grid" placeItems="center">
+          <AddItem />
+        </Box>
         <InputGroup size="md" m="2">
           <Input
             type="text"
@@ -86,12 +88,23 @@ export default function Home({ session }: { session: Session }) {
           <InputRightElement>
             <IconButton
               aria-label="Clear"
+              variant="ghost"
               isRound
               onClick={() => handleSearch({ target: { value: '' } })}
               icon={<MdClear />}
             />
           </InputRightElement>
         </InputGroup>
+        <Box display="grid" placeItems="center">
+          <Button
+            onClick={() => supabase.auth.signOut()}
+            variant="solid"
+            mx="1rem"
+            size="sm"
+          >
+            Logout
+          </Button>
+        </Box>
       </Box>
       <Flex
         gap={GRID_GAP}

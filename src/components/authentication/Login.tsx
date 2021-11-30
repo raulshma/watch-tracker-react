@@ -7,37 +7,33 @@ import {
   AlertTitle,
   CloseButton,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
-import { supabase } from '../../client/supabaseClient';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../providers/AuthProvider';
 
 export default function Login() {
-  const [loading, setLoading] = useState<boolean>(false);
+  const { signin, loading, error, session } = useAuth();
   const [email, setEmail] = useState<string>('');
+  const navigate = useNavigate();
+  const [password, setPassword] = useState<string>('');
   const [toggleMessage, setToggleMessage] = useState({
     status: 'success' as 'success' | 'error',
     message: '',
     state: false,
   });
 
-  const handleLogin = async (email: string) => {
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.signIn({ email });
-      if (error) throw error;
-      setToggleMessage({
-        status: 'success',
-        state: true,
-        message: 'Check your email for the login link!',
-      });
-    } catch (error: any) {
+  useEffect(() => {
+    if (error)
       setToggleMessage({
         status: 'error',
         state: true,
         message: error.error_description || error.message,
       });
-    } finally {
-      setLoading(false);
-    }
+    if (session) navigate('/');
+  }, [error]);
+
+  const handleLogin = async (email: string) => {
+    signin({ email, password });
   };
 
   return (
@@ -50,6 +46,14 @@ export default function Login() {
             placeholder="Your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+          />
+        </Box>
+        <Box>
+          <Input
+            type="password"
+            placeholder="Your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </Box>
         <Box>

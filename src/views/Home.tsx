@@ -2,23 +2,26 @@ import { Button, IconButton } from '@chakra-ui/button';
 import { Input, InputGroup, InputRightElement } from '@chakra-ui/input';
 import { Box, Flex } from '@chakra-ui/layout';
 
-import { Session } from '@supabase/gotrue-js';
 import { PostgrestError } from '@supabase/postgrest-js';
-import React, { useEffect } from 'react';
+import React, { useEffect} from 'react';
 import { MdClear } from 'react-icons/md';
 
 import { supabase } from '../client/supabaseClient';
 import MovieCard from '../components/common/MovieCard';
+import MovieCardV2 from '../components/common/MovieCardV2';
 import AddItem from '../components/modals/AddMovie';
 import { GRID_GAP, GRID_ML, GRID_MR } from '../constants';
+import { useAuth } from '../providers/AuthProvider';
 import { useGlobalState } from '../store/items';
+import HomeNew from './HomeNew';
 
 type Response = {
   data: any[] | null;
   error: PostgrestError | null;
 };
 
-export default function Home({ session }: { session: Session }) {
+export default function Home() {
+  let auth = useAuth();
   const itemsArray = useGlobalState();
   const [searchValue, setSearchValue] = React.useState<string>('');
   const [filteredData, setFilteredData] = React.useState<any>([]);
@@ -97,7 +100,9 @@ export default function Home({ session }: { session: Session }) {
         </InputGroup>
         <Box display="grid" placeItems="center">
           <Button
-            onClick={() => supabase.auth.signOut()}
+            onClick={() => {
+              auth.signout();
+            }}
             variant="solid"
             mx="1rem"
             size="sm"
@@ -115,19 +120,31 @@ export default function Home({ session }: { session: Session }) {
         mr={GRID_MR}
       >
         {filteredData.map((i, _) => (
-          <MovieCard
-            id={i.id}
-            title={i.title}
+          <MovieCardV2
+            key={i.id}
             poster={i.image}
-            description={i.description}
-            rating={i.rating}
-            genre={i.genre}
+            title={i.title}
             year={i.year}
+            genre={i.genre}
+            rating={i.rating}
+            description={i.description}
             wikiLink={i.wiki_link}
             imdbLink={i.imdb_link}
-            key={i.id}
           />
+          // <MovieCard
+          //   id={i.id}
+          //   title={i.title}
+          //   poster={i.image}
+          //   description={i.description}
+          //   rating={i.rating}
+          //   genre={i.genre}
+          //   year={i.year}
+          //   wikiLink={i.wiki_link}
+          //   imdbLink={i.imdb_link}
+          //   key={i.id}
+          // />
         ))}
+        {/* <HomeNew /> */}
       </Flex>
     </Box>
   );

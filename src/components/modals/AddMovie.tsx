@@ -21,7 +21,6 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { supabase } from '../../components/authentication/Auth';
 import { REGEX_URL } from '../../constants';
-import MovieAutoSuggest from '../common/AutoSuggest';
 import {
   Button as SupabaseButton,
 } from '@supabase/ui';

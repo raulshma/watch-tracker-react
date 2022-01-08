@@ -1,11 +1,23 @@
 import React, { ReactElement } from 'react';
-import { Badge } from '@supabase/ui';
+import { Badge, Button } from '@supabase/ui';
 import './MovieCardV2.css';
 import { Tooltip } from '@chakra-ui/tooltip';
-import { Box, Flex, Heading, Link, Stack } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Heading,
+  IconButton,
+  Link,
+  Stack,
+  useDisclosure,
+} from '@chakra-ui/react';
 import ReactStars from 'react-rating-stars-component';
 import ReleaseYear from './ReleaseYear';
+import AlertCommon from './AlertCommon';
+import { IoMdRemove } from 'react-icons/io';
+import EditMovie from '../modals/EditMovie';
 interface Props {
+  id: number;
   poster: string;
   title: string;
   year: string;
@@ -28,12 +40,43 @@ type badgeColors =
   | 'pink';
 
 function MovieCardV2(props: Props): ReactElement {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <div className="card">
-      <div className="poster">
-        <img src={props.poster} />
-      </div>
-      <div className="details">
+    <Box className="card">
+      <Box className="card-edit">
+        <button aria-label="Remove" onClick={onOpen}>
+          Edit
+        </button>
+      </Box>
+      <AlertCommon
+        header="Delete?"
+        body={`Are you sure you want to delete ${props.title}`}
+        CustomIcon={IoMdRemove}
+        id={props.id}
+        actionName="REMOVE"
+      />
+      {isOpen && (
+        <EditMovie
+          isOpen={isOpen}
+          onClose={onClose}
+          onOpen={onOpen}
+          item={{
+            id: props.id,
+            title: props.title,
+            poster: props.poster,
+            rating: props.rating,
+            genre: props.genre,
+            year: props.year,
+            wikiLink: props.wikiLink,
+            imdbLink: props.imdbLink,
+            description: props.description,
+          }}
+        />
+      )}
+      <Box className="poster">
+        <img src={props.poster} loading="lazy" />
+      </Box>
+      <Box className="details">
         <Heading
           textAlign={'center'}
           fontSize={'medium'}
@@ -53,10 +96,10 @@ function MovieCardV2(props: Props): ReactElement {
             {`${props.title} (${props.year})`}
           </Tooltip>
         </Heading>
-        <div className="released-year">
+        <Box className="released-year">
           {props.year && <ReleaseYear year={props.year} />}
-        </div>
-        <div className="rating">
+        </Box>
+        <Box className="rating">
           {props.rating && (
             <Stack direction={'row'} justify={'center'} spacing={6}>
               <Stack spacing={0} align={'center'}>
@@ -72,8 +115,8 @@ function MovieCardV2(props: Props): ReactElement {
               </Stack>
             </Stack>
           )}
-        </div>
-        <div className="tags">
+        </Box>
+        <Box className="tags">
           {props.genre ? (
             props.genre.split('/').map((i, idx) => (
               <Badge
@@ -90,11 +133,16 @@ function MovieCardV2(props: Props): ReactElement {
           ) : (
             <br />
           )}
-        </div>
-        <div className="info">
+        </Box>
+        <Box className="info">
           <p>{props.description}</p>
-        </div>
-        <Flex gridGap={'5px'} fontSize="0.8em" justifyContent="center" alignItems="center">
+        </Box>
+        <Flex
+          gridGap={'5px'}
+          fontSize="0.8em"
+          justifyContent="center"
+          alignItems="center"
+        >
           {props.wikiLink && (
             <Box textAlign="center" color="skyblue">
               <Link href={props.wikiLink} isExternal>
@@ -110,8 +158,8 @@ function MovieCardV2(props: Props): ReactElement {
             </Box>
           )}
         </Flex>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

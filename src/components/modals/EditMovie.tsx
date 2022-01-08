@@ -21,13 +21,12 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { MdEdit } from 'react-icons/md';
-import { supabase } from '../../client/supabaseClient';
+import { supabase } from '../../components/authentication/Auth';
 import { REGEX_URL } from '../../constants';
 
-export default function EditMovie({ item: item }: any) {
+export default function EditMovie({ item: item, isOpen, onOpen, onClose }: any) {
   const toast = useToast();
   const [loading, setLoading] = useState<boolean>(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const {
     register,

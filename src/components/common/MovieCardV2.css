@@ -91,3 +91,22 @@
 .info p {
   margin: 15px 0 10px;
 }
+
+.card-edit {
+  position: absolute;
+  color: black;
+  background: rgba(255, 255, 255, 0.774);
+  margin: 0;
+  padding-bottom: 0.2em;
+  padding-right: 0.1em;
+  border-radius: 0 0 2em 0;
+  z-index: 3;
+}
+.card-edit button {
+  color: #000;
+  margin: 0;
+  padding: 0 0.7em 0.3em 0.5em;
+  font-size: 0.725em;
+  font-weight: 500;
+  cursor: pointer;
+}

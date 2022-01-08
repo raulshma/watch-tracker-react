@@ -19,10 +19,12 @@ import {
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { supabase } from '../../client/supabaseClient';
+import { supabase } from '../../components/authentication/Auth';
 import { REGEX_URL } from '../../constants';
 import MovieAutoSuggest from '../common/AutoSuggest';
-
+import {
+  Button as SupabaseButton,
+} from '@supabase/ui';
 export default function AddMovie() {
   const toast = useToast();
   const [loading, setLoading] = useState<boolean>(false);
@@ -75,9 +77,9 @@ export default function AddMovie() {
 
   return (
     <Box m="2">
-      <Button onClick={onOpen} size="sm">
+      <SupabaseButton onClick={onOpen}>
         ADD
-      </Button>
+      </SupabaseButton>
 
       <Modal
         isOpen={isOpen}

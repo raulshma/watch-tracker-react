@@ -1,19 +1,28 @@
 import { Button, IconButton } from '@chakra-ui/button';
 import { Input, InputGroup, InputRightElement } from '@chakra-ui/input';
 import { Box, Flex } from '@chakra-ui/layout';
+import { useDisclosure } from '@chakra-ui/react';
 
 import { PostgrestError } from '@supabase/postgrest-js';
-import React, { useEffect} from 'react';
-import { MdClear } from 'react-icons/md';
+import {
+  SidePanel,
+  Space,
+  Typography,
+  Button as SupabaseButton,
+} from '@supabase/ui';
+import React, { useEffect, useState } from 'react';
+import { MdClear, MdSettings } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 
-import { supabase } from '../client/supabaseClient';
+import { supabase } from '../components/authentication/Auth';
 import MovieCard from '../components/common/MovieCard';
 import MovieCardV2 from '../components/common/MovieCardV2';
+import SearchMovie from '../components/common/SearchMovie';
 import AddItem from '../components/modals/AddMovie';
 import { GRID_GAP, GRID_ML, GRID_MR } from '../constants';
 import { useAuth } from '../providers/AuthProvider';
 import { useGlobalState } from '../store/items';
-import HomeNew from './HomeNew';
+// import HomeNew from './HomeNew';
 
 type Response = {
   data: any[] | null;
@@ -21,11 +30,16 @@ type Response = {
 };
 
 export default function Home() {
+  const navigate = useNavigate();
   let auth = useAuth();
   const itemsArray = useGlobalState();
-  const [searchValue, setSearchValue] = React.useState<string>('');
-  const [filteredData, setFilteredData] = React.useState<any>([]);
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [filteredData, setFilteredData] = useState<any>([]);
+  const [visible, setVisible] = useState(false);
 
+  function toggle() {
+    setVisible(!visible);
+  }
   useEffect(() => {
     getList();
   }, []);
@@ -80,6 +94,12 @@ export default function Home() {
         <Box display="grid" placeItems="center">
           <AddItem />
         </Box>
+        <Box display="grid" placeItems="center">
+          <SupabaseButton type="default" style={{width: 120}} onClick={toggle}>
+            Add By Search
+          </SupabaseButton>
+          <SearchMovie visible={visible} toggle={toggle}/>
+        </Box>
         <InputGroup size="md" m="2">
           <Input
             type="text"
@@ -98,6 +118,15 @@ export default function Home() {
             />
           </InputRightElement>
         </InputGroup>
+        <Box display="grid" placeItems="center">
+          <IconButton
+            aria-label="Settings"
+            variant="ghost"
+            isRound
+            onClick={() => navigate('/settings')}
+            icon={<MdSettings />}
+          />
+        </Box>
         <Box display="grid" placeItems="center">
           <Button
             onClick={() => {
@@ -122,6 +151,7 @@ export default function Home() {
         {filteredData.map((i, _) => (
           <MovieCardV2
             key={i.id}
+            id={i.id}
             poster={i.image}
             title={i.title}
             year={i.year}

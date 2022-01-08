@@ -5,6 +5,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import RequireAuth from './components/authentication/RequireAuth';
 import { AuthProvider } from './providers/AuthProvider';
 import AuthBasic from './components/authentication/Auth';
+import Settings from './views/Settings';
 
 function App() {
   return (
@@ -15,6 +16,14 @@ function App() {
           element={
             <RequireAuth>
               <Home />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <RequireAuth>
+              <Settings />
             </RequireAuth>
           }
         />

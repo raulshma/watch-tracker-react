@@ -13,6 +13,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Switch,
   Textarea,
   useDisclosure,
   useToast,
@@ -21,9 +22,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { supabase } from '../../components/authentication/Auth';
 import { REGEX_URL } from '../../constants';
-import {
-  Button as SupabaseButton,
-} from '@supabase/ui';
+import { Button as SupabaseButton } from '@supabase/ui';
 export default function AddMovie() {
   const toast = useToast();
   const [loading, setLoading] = useState<boolean>(false);
@@ -51,6 +50,7 @@ export default function AddMovie() {
       wiki_link: values.wiki_link.trim(),
       imdb_link: values.imdb_link.trim(),
       rating: rating === 0 ? null : rating,
+      type: values.type === true ? 'Series' : 'Movie',
       user_id: user.id,
     };
     const { data, error } = await supabase.from('list').insert([model]);
@@ -76,9 +76,7 @@ export default function AddMovie() {
 
   return (
     <Box m="2">
-      <SupabaseButton onClick={onOpen}>
-        ADD
-      </SupabaseButton>
+      <SupabaseButton onClick={onOpen}>ADD</SupabaseButton>
 
       <Modal
         isOpen={isOpen}
@@ -89,62 +87,68 @@ export default function AddMovie() {
         <ModalOverlay />
         <ModalContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <ModalHeader>Add movie</ModalHeader>
+            <ModalHeader pb={1}>Add movie</ModalHeader>
             <ModalCloseButton />
-            <ModalBody pb={6}>
+            <ModalBody pb={2}>
               {/* <MovieAutoSuggest /> */}
               <FormControl isInvalid={errors.title}>
-                <FormLabel>Title</FormLabel>
+                <FormLabel fontSize={12}>Title</FormLabel>
                 <Input
-                  size="sm"
+                  size="xs"
                   placeholder="Title"
                   {...register('title', { required: true })}
                 />
               </FormControl>
 
               <FormControl mt={2} isInvalid={errors.description}>
-                <FormLabel>Description</FormLabel>
+                <FormLabel fontSize={12}>Description</FormLabel>
                 <Textarea
-                  size="sm"
+                  size="xs"
                   rows={2}
                   placeholder="Description"
                   {...register('description', { required: true })}
                 />
               </FormControl>
               <FormControl mt={2} isInvalid={errors.image_url}>
-                <FormLabel>Image Url</FormLabel>
+                <FormLabel fontSize={12}>Image Url</FormLabel>
                 <Input
-                  size="sm"
+                  size="xs"
                   placeholder="Image Url"
                   {...register('image_url', { pattern: REGEX_URL })}
                 />
               </FormControl>
               <HStack>
                 <FormControl pt={2} isInvalid={errors.genre}>
-                  <FormLabel>Genre</FormLabel>
-                  <Input size="sm" placeholder="Genre" {...register('genre')} />
+                  <FormLabel fontSize={12}>Genre</FormLabel>
+                  <Input size="xs" placeholder="Genre" {...register('genre')} />
                 </FormControl>
                 <FormControl pt={2} isInvalid={errors.year}>
-                  <FormLabel>Release Year</FormLabel>
-                  <Input size="sm" placeholder="Year" {...register('year')} />
+                  <FormLabel fontSize={12}>Release Year</FormLabel>
+                  <Input size="xs" placeholder="Year" {...register('year')} />
                 </FormControl>
               </HStack>
+              <FormControl display="flex" alignItems="center" mt={2}>
+                <FormLabel fontSize={12} htmlFor="type" mb="0">
+                  Is Series
+                </FormLabel>
+                <Switch size={'sm'} id="type" {...register('type')} />
+              </FormControl>
               <FormControl pt={2} isInvalid={errors.rating}>
-                <FormLabel>Rating</FormLabel>
-                <Input size="sm" placeholder="Rating" {...register('rating')} />
+                <FormLabel fontSize={12}>Rating</FormLabel>
+                <Input size="xs" placeholder="Rating" {...register('rating')} />
               </FormControl>
               <FormControl mt={2} isInvalid={errors.wiki_link}>
-                <FormLabel>Wikipedia Link</FormLabel>
+                <FormLabel fontSize={12}>Wikipedia Link</FormLabel>
                 <Input
-                  size="sm"
+                  size="xs"
                   placeholder="Wikipedia Link"
                   {...register('wiki_link', { pattern: REGEX_URL })}
                 />
               </FormControl>
               <FormControl mt={2} isInvalid={errors.imdb_link}>
-                <FormLabel>IMDB Link</FormLabel>
+                <FormLabel fontSize={12}>IMDB Link</FormLabel>
                 <Input
-                  size="sm"
+                  size="xs"
                   placeholder="IMDB Link"
                   {...register('imdb_link', { pattern: REGEX_URL })}
                 />
@@ -154,7 +158,7 @@ export default function AddMovie() {
                 {errors.imdb_link && errors.imdb_link.message}
               </FormErrorMessage>
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter pt={2}>
               <Button
                 size="sm"
                 type="submit"

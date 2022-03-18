@@ -1,4 +1,4 @@
-import { Box, List, ListItem, Stack, Text } from '@chakra-ui/react';
+import { Box, IconButton, List, Stack, Text, useToast } from '@chakra-ui/react';
 import {
   Button,
   Card,
@@ -7,12 +7,13 @@ import {
   Space,
   Typography,
 } from '@supabase/ui';
-import React, { ReactElement, useEffect, useRef, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { supabase } from '../authentication/Auth';
 import { API_SEARCH_URL, API_URL, IMAGE_URL } from '../../constants';
 import { Result, SearchResult } from '../../types/searchResult.interface';
 import Genres from '../../data/genres.json';
 import { MovieGenre } from '../../types/genres.interface';
+import { AddIcon } from '@chakra-ui/icons';
 interface Props {
   visible: boolean;
   toggle: () => void;
@@ -20,7 +21,7 @@ interface Props {
 
 function SearchMovie({ visible, toggle }: Props): ReactElement {
   if (!visible) return <></>;
-
+  const toast = useToast();
   const [apiKey, setApiKey] = useState('');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Result[] | undefined>([]);
@@ -56,6 +57,42 @@ function SearchMovie({ visible, toggle }: Props): ReactElement {
         setResults(data.results);
       });
   };
+
+  const onSubmit = async (values: any) => {
+    if (!confirm(`Are you sure you want to add ${values.title} movie?`)) return;
+    const user = supabase.auth.user();
+    if (!user) return console.log('No user');
+    const model = {
+      title: values.title.trim(),
+      description: values.overview.trim(),
+      image: IMAGE_URL + values.poster_path.trim(),
+      genre: values.genre_ids
+        ?.map((id) => genres.find((g) => g.id === id)?.name)
+        ?.join('/')
+        ?.trim('/'),
+      year: new Date(values.release_date).getFullYear(),
+      rating: (Number(values.vote_average) * 10) / 20,
+      user_id: user.id,
+    };
+    const { data, error } = await supabase.from('list').insert([model]);
+    if (data) {
+      toast({
+        title: 'Success.',
+        status: 'success',
+        duration: 4500,
+        isClosable: true,
+      });
+    } else if (error) {
+      alert(JSON.stringify(error));
+      toast({
+        title: 'Failed.',
+        status: 'error',
+        duration: 4500,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <SidePanel
       visible={visible}
@@ -109,6 +146,16 @@ function SearchMovie({ visible, toggle }: Props): ReactElement {
                   return <Text>{genres.find((g) => g.id === id)?.name}</Text>;
                 })}
               </Box>
+              <IconButton
+                style={{ position: 'absolute', right: '0.5em', top: '0.5em' }}
+                variant="ghost"
+                colorScheme="teal"
+                fontSize={12}
+                size={'xs'}
+                aria-label="Add movie"
+                icon={<AddIcon />}
+                onClick={() => onSubmit(item)}
+              />
             </Card>
           );
         })}
